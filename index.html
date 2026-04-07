@@ -230,6 +230,11 @@ button:hover{
 .bottomNav button:hover{
   color:white;
 }
+  #userNameDisplay{
+  font-size:18px;
+  margin:5px 0;
+  color:#4cafef;
+}
 </style>
 </head>
 
@@ -247,6 +252,11 @@ button:hover{
 <header>Modi hate club</header>
 
 <div id="home" class="page active">
+  <div class="card">
+  <div><b>Your Anonymous ID:</b></div>
+  <div id="userNameDisplay"></div>
+  <button onclick="copyUsername()">Copy</button>
+</div>
   <div class="sectionTitle">🔥 Trending</div>
   <div class="card">Top posts based on likes coming here soon 👀</div>
 
@@ -355,8 +365,13 @@ onAuthStateChanged(auth, (user) => {
 
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("app").style.display = "block";
+    document.getElementById("userNameDisplay").innerText = username;
   }
 });
+  window.copyUsername = function(){
+  navigator.clipboard.writeText(username);
+  alert("Copied 😤");
+};
 
 
 // 📝 ADD POST
