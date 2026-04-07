@@ -344,13 +344,17 @@ window.login = async function(){
 // 🔐 AUTH STATE (LOCK / UNLOCK APP)
 onAuthStateChanged(auth, (user) => {
   if(user){
-    username = user.displayName;
+    let storedName = localStorage.getItem("username");
+
+    if(!storedName){
+      storedName = generateUsername();
+      localStorage.setItem("username", storedName);
+    }
+
+    username = storedName;
 
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("app").style.display = "block";
-  } else {
-    document.getElementById("loginPage").style.display = "flex";
-    document.getElementById("app").style.display = "none";
   }
 });
 
@@ -504,6 +508,13 @@ window.showPage = function(pageId){
     active.classList.add("active");
   }
 };
+  function generateUsername(){
+  const names = ["jeff","epstein","trump","diddy","charlie","kirk","pluh"];
+  const randomName = names[Math.floor(Math.random()*names.length)];
+  const num = Math.floor(Math.random()*9000)+1000;
+
+  return randomName + "_" + num;
+}
 </script>
 </div>
 </body>
