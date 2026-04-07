@@ -223,8 +223,8 @@ button:hover{
 
 <div id="loginPage">
   <div class="loginCard">
-    <h1>🔥 Chaos Hub</h1>
-    <p>Enter the chaos... if you dare 👁️</p>
+    <h1>Dih🥀</h1>
+    <p>click to get railed 👁️</p>
     <button onclick="login()">Login with Google</button>
   </div>
 </div>
@@ -406,6 +406,19 @@ window.onload = () => {
   listen("opinions", "opList");
   listen("stories", "storyList");
   listen("memes", "memeList");
+};
+  window.showPage = function(pageId){
+  const pages = ["homelist","conflist","storylist","memelist"];
+
+  // hide all
+  pages.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = "none";
+  });
+
+  // show selected
+  const active = document.getElementById(pageId);
+  if(active) active.style.display = "block";
 };
 </script>
 </div>
