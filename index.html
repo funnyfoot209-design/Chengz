@@ -3,516 +3,194 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chaos Hub App</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
-/* 🔥 FONT */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+@@ -12,9 +12,9 @@
 
 body{
   margin:0;
   font-family:'Poppins', sans-serif;
-  background:#0a0a0f;
-  color:#e6e6eb;
+  background:#0f0f0f;
+  overflow:hidden;
+  font-family: 'Poppins', sans-serif;
+  background:#0c0c0c;
+  color:#eaeaea;
 }
 
 /* 🌌 BACKGROUND ANIMATION */
-body::before{
+@@ -127,21 +127,30 @@
+  top:0;
+  z-index:10;
+}
+
+header::after{
   content:"";
-  position:fixed;
-  width:200%;
-  height:200%;
-  background: radial-gradient(circle at 30% 30%, #ff4d6d33, transparent),
-              radial-gradient(circle at 70% 70%, #6a5cff33, transparent);
-  animation: moveBg 10s infinite alternate;
-  z-index:0;
-}
-
-@keyframes moveBg{
-  0%{transform:translate(0,0);}
-  100%{transform:translate(-50px,-50px);}
-}
-
-/* 🔐 LOGIN PAGE */
-#loginPage{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-
-  text-align:center;
-  z-index:10;
-}
-
-/* 💎 GLASS CARD */
-.loginCard{
-  backdrop-filter: blur(20px);
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  padding:40px;
-  border-radius:20px;
-  box-shadow:0 0 40px rgba(0,0,0,0.5);
-  animation: fadeIn 1s ease;
-}
-
-@keyframes fadeIn{
-  from{opacity:0; transform:translateY(20px);}
-  to{opacity:1; transform:translateY(0);}
-}
-
-/* 🔥 TITLE */
-.loginCard h1{
-  font-size:42px;
-  margin-bottom:10px;
-  background: linear-gradient(90deg,#ff4d6d,#6a5cff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* 📝 SUBTEXT */
-.loginCard p{
-  opacity:0.7;
-  margin-bottom:25px;
-}
-
-/* 🚀 BUTTON */
-.loginCard button{
-  padding:14px 28px;
-  border:none;
-  border-radius:30px;
-  background: linear-gradient(90deg,#ff4d6d,#ff758f);
-  color:white;
-  font-size:16px;
-  cursor:pointer;
-  transition: all 0.3s ease;
-  box-shadow:0 0 15px rgba(255,0,100,0.4);
-}
-
-/* ✨ HOVER */
-.loginCard button:hover{
-  transform: scale(1.08);
-  box-shadow:0 0 25px rgba(255,0,120,0.8);
-}
-
-/* ⚡ CLICK EFFECT */
-.loginCard button:active{
-  transform: scale(0.95);
-}
-body{
-  margin:0;
-  font-family:Poppins,sans-serif;
-  background: radial-gradient(circle at 20% 0%,rgba(255,0,85,.25),transparent),
-              radial-gradient(circle at 80% 20%,rgba(255,77,136,.25),transparent),
-              #0f0f0f;
-  color:white;
-}
-
-header{
-  text-align:center;
-  padding:16px;
-  font-size:22px;
-  font-weight:700;
-  letter-spacing:1px;
-  background: rgba(20,20,20,0.7);
-  backdrop-filter: blur(12px);
-  border-bottom:1px solid rgba(255,255,255,0.08);
-  position:sticky;
-  top:0;
-  z-index:10;
-}
+  display:block;
+  width:60px;
+  height:3px;
+  margin:6px auto 0;
+  border-radius:10px;
+  background:linear-gradient(90deg,#6a5cff,#00c6ff);
+  box-shadow:0 0 12px rgba(0,198,255,0.6);
 .header{
   position:sticky;
   top:0;
+  width:100%;
   padding:12px;
   text-align:center;
   font-weight:600;
   font-size:20px;
-  background:#0a0a0f;
-  border-bottom:1px solid #1a1a25;
+  background:#0c0c0c;
+  border-bottom:1px solid #222;
+  z-index:5;
 }
 
+.page{display:none;padding:15px;max-width:800px;margin:auto}
+.active{display:block}
 .page{
   display:none;
-  opacity:0;
-  transform:translateX(20px);
-  transition:all 0.3s ease;
+  padding:15px;
+  padding-bottom:70px; /* space for navbar */
+  max-width:600px;
+  margin:auto;
 }
 
 .active{
   display:block;
-  opacity:1;
-  transform:translateX(0);
 }
 .sectionTitle{
   font-size:18px;
   font-weight:600;
-  margin-bottom:10px;
-  background:linear-gradient(90deg,#fff,#ff8fb3);
+@@ -150,43 +159,43 @@
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
+
 .card{
-  background:#12121a;
-  border-radius:14px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(10px);
+  padding:14px;
+  border-radius:16px;
+  background:#121212;
+  border-radius:15px;
   padding:12px;
   margin-bottom:12px;
-  border:1px solid #1f1f2a;
+  transition:.3s;
+  border:1px solid #1f1f1f;
   transition:0.3s;
 }
 
 .card:hover{
+  transform:translateY(-4px) scale(1.01);
+  box-shadow:0 15px 30px rgba(0,0,0,.6);
   transform:translateY(-3px);
-  box-shadow:0 0 20px rgba(106,92,255,0.15);
+  box-shadow:0 0 20px rgba(255,0,100,0.1);
 }
+
 textarea{
   width:100%;
+  padding:10px;
   border:none;
   border-radius:10px;
+  background:#1c1c1c;
   padding:10px;
-  background:#1a1a24;
+  background:#1a1a1a;
   color:white;
+  resize:none;
   outline:none;
 }
 
 button{
-  background:linear-gradient(90deg,#6a5cff,#4facfe);
+  margin-top:8px;
+  padding:8px 12px;
+  background:linear-gradient(90deg,#ff4d6d,#ff758f);
   border:none;
   padding:8px 12px;
   border-radius:10px;
+  background:linear-gradient(90deg,#ff0055,#ff4d88);
   color:white;
   cursor:pointer;
+  transition:.25s;
   transition:0.2s;
 }
 
 button:hover{
+  transform:scale(1.07);
+  box-shadow:0 10px 25px rgba(255,0,85,.4);
   transform:scale(1.05);
 }
 
 .meme{width:100%;border-radius:10px;margin-top:10px}
+@@ -195,26 +204,33 @@
 
-.actions button{margin-right:5px}
-.post{
-  position:relative;
-}
-
-.heartAnim{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%) scale(0.5);
-  font-size:50px;
-  opacity:0;
-  pointer-events:none;
-  transition:0.4s;
-}
 .postText{margin:8px 0}
 
+.bottomNav{
 .navbar{
   position:fixed;
   bottom:0;
   width:100%;
   display:flex;
   justify-content:space-around;
+  background:#111;
   padding:10px 0;
-  background:#0a0a0f;
-  border-top:1px solid #1a1a25;
+  box-shadow:0 -5px 20px rgba(0,0,0,.5);
+  background:#0c0c0c;
+  border-top:1px solid #222;
 }
 
+.bottomNav button{
 .navbar button{
   background:none;
   border:none;
-  color:#888;
+  color:#aaa;
+  font-size:14px;
   font-size:22px;
   cursor:pointer;
   transition:0.2s;
 }
 
+.bottomNav button:hover{
 .navbar button:hover{
-  color:#fff;
+  color:white;
   transform:scale(1.2);
 }
 
 .navbar button.activeTab{
-  color:#6a5cff;
+  color:#ff4d6d;
 }
 </style>
 </head>
-
-<body>
-
-<div id="loginPage">
-  <div class="loginCard">
-    <h1>Dih🥀</h1>
-    <p>click to get railed 👁️</p>
-    <button onclick="login()">Login with Google</button>
-  </div>
-</div>
-
-<div id="app" style="display:none;">
-<header>Modi hate club</header>
-
-<div id="home" class="page active">
-  <div class="sectionTitle">🔥 Trending</div>
-  <div class="card">Top posts based on likes coming here soon 👀</div>
-
-  <div class="sectionTitle">💭 Random Thought</div>
-  <div class="card">"ek din sharma bahr pitega"</div>
-</div>
-
-<div id="conf" class="page">
-  <div class="sectionTitle">🤫 Confessions</div>
-  <div class="card">
-    <textarea id="confInput" placeholder="Drop something wild..."></textarea>
-    <button onclick="addPost('confessions','confInput')">Post</button>
-  </div>
-  <div id="confList"></div>
-</div>
-
-<div id="op" class="page">
-  <div class="sectionTitle">Gossip</div>
-  <div class="card">
-    <textarea id="opInput" placeholder="Hot take..."></textarea>
-    <button onclick="addPost('opinions','opInput')">Post</button>
-  </div>
-  <div id="opList"></div>
-</div>
-
-<div id="story" class="page">
-  <div class="sectionTitle">Bakchodi</div>
-  <div class="card">
-    <textarea id="storyInput" placeholder="Storytime..."></textarea>
-    <button onclick="addPost('stories','storyInput')">Post</button>
-  </div>
-  <div id="storyList"></div>
-</div>
-
-<div id="meme" class="page">
-  <div class="sectionTitle"> Memes</div>
-  <div class="card">
-    <textarea id="memeInput" placeholder="Caption..."></textarea>
-    <input type="file" id="memeImg">
-    <button onclick="addPost('memes','memeInput','memeImg')">Post Meme</button>
-  </div>
+@@ -277,7 +293,7 @@ <h1>Dih🥀</h1>
   <div id="memeList"></div>
 </div>
 
+<div class="bottomNav">
 <div class="navbar">
-  <button onclick="switchTab(this,'home')">🏠</button>
-  <button onclick="switchTab(this,'conf')">🤫</button>
-    <button onclick="switchTab(this,'op')">😌</button>
-  <button onclick="switchTab(this,'story')">😍</button>
-  <button onclick="switchTab(this,'meme')">🥀</button>
-</div>
-<script type="module">
-
-// 🔥 IMPORTS
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, increment } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-
-// 🔥 CONFIG (PUT YOUR OWN)
-const firebaseConfig = {
-  apiKey: "AIzaSyD5fwpIYz4_0UCnQ_HpKtHa8ohnXdrWr20",
-  authDomain: "modimemepage.firebaseapp.com",
-  projectId: "modimemepage",
-  appId: "1:836746943023:web:7573bc74f9748425b9c4da"
-};
-
-
-// 🔥 INIT
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-
-let username = "Anon";
-
-
-// 🔐 LOGIN
-window.login = async function(){
-  try{
-    await signInWithPopup(auth, provider);
-  } catch(err){
-    console.log(err);
-    alert(err.message);
-  }
-};
-
-
-// 🔐 AUTH STATE
-onAuthStateChanged(auth, (user) => {
-  if(user){
-    username = user.displayName;
-
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("app").style.display = "block";
-  } else {
-    document.getElementById("loginPage").style.display = "flex";
-    document.getElementById("app").style.display = "none";
-  }
-});
-
-
-// 📝 POST
-window.addPost = async function(type, inputId, imgId){
-  let text = document.getElementById(inputId).value;
-  let img = document.getElementById(imgId)?.files[0];
-
-  let imageUrl = img ? URL.createObjectURL(img) : "";
-
-  await addDoc(collection(db, type), {
-    text,
-    imageUrl,
-    username,
-    likes:0,
-    createdAt: serverTimestamp()
-  });
-
-  document.getElementById(inputId).value='';
-};
-
-
-// ❤️ LIKE
-window.react = async function(type,id,field="likes"){
-  await updateDoc(doc(db,type,id), {
-    [field]: increment(1)
-  });
-};
-
-
-// ❤️ DOUBLE TAP
-let lastTap = 0;
-
-window.handleDoubleTap = function(e, type, id){
-  let currentTime = new Date().getTime();
-  let tapLength = currentTime - lastTap;
-
-  if(tapLength < 300 && tapLength > 0){
-    react(type, id, "likes");
-
-    let heart = e.currentTarget.querySelector(".heartAnim");
-    if(heart){
-      heart.style.opacity = "1";
-      heart.style.transform = "scale(1.5)";
-      setTimeout(()=>{
-        heart.style.opacity = "0";
-        heart.style.transform = "scale(1)";
-      }, 600);
-    }
-  }
-
-  lastTap = currentTime;
-};
-
-
-// 👀 LISTEN (RENDER POSTS)
-function listen(type, listId){
-  const q = query(collection(db, type), orderBy("likes","desc"));
-
-  onSnapshot(q, snap=>{
-    let div = document.getElementById(listId);
-    if(!div) return;
-
-    div.innerHTML="";
-
-    snap.forEach(docSnap=>{
-      let d = docSnap.data();
-      let id = docSnap.id;
-
-      let el = document.createElement('div');
-      el.className='card';
-
-      el.innerHTML = `
-        <div class="post" ontouchend="handleDoubleTap(event,'${type}','${id}')" onclick="handleDoubleTap(event,'${type}','${id}')">
-          
-          <b>@${d.username}</b>
-          <p>${d.text || ""}</p>
-
-          ${d.imageUrl ? `<img src="${d.imageUrl}" class="meme">` : ""}
-
-          <div>❤️ ${d.likes}</div>
-
-          <div class="heartAnim">❤️</div>
-        </div>
-      `;
-
-      div.appendChild(el);
-    });
-  });
-}
-
-
-// 📱 NAVIGATION
-window.switchTab = function(btn, pageId){
-  document.querySelectorAll(".page").forEach(p=>{
-    p.classList.remove("active");
-  });
-
-  const page = document.getElementById(pageId);
-  if(page){
-    page.classList.add("active");
-  }
-
-  document.querySelectorAll(".navbar button").forEach(b=>{
-    b.classList.remove("activeTab");
-  });
-
-  if(btn) btn.classList.add("activeTab");
-};
-
-
-// 📱 SWIPE NAV
-let startX = 0;
-
-document.addEventListener("touchstart", (e)=>{
-  if(e.target.closest(".post")) return;
-  startX = e.touches[0].clientX;
-});
-
-document.addEventListener("touchend", (e)=>{
-  if(e.target.closest(".post")) return;
-
-  let endX = e.changedTouches[0].clientX;
-  let diff = startX - endX;
-
-  const pages = ["homelist","conflist","storylist","memelist"];
-  let currentIndex = pages.findIndex(id =>
-    document.getElementById(id)?.classList.contains("active")
-  );
-
-  if(diff > 50 && currentIndex < pages.length-1){
-    switchTab(document.querySelectorAll(".navbar button")[currentIndex+1], pages[currentIndex+1]);
-  }
-
-  if(diff < -50 && currentIndex > 0){
-    switchTab(document.querySelectorAll(".navbar button")[currentIndex-1], pages[currentIndex-1]);
-  }
-});
-
-
-// 🚀 START
-window.onload = () => {
-  // default page
-  document.getElementById("homelist")?.classList.add("active");
-
-  // listeners
-  listen("confessions","confList");
+  <button onclick="showPage('home')">🏠</button>
+  <button onclick="showPage('conf')">😌</button>
+  <button onclick="showPage('op')">😍</button>
+@@ -409,15 +425,13 @@ <h1>Dih🥀</h1>
   listen("stories","storyList");
   listen("memes","memeList");
 };
+window.showPage = function(pageId){
+  const pages = document.querySelectorAll(".page");
+
+  pages.forEach(p => p.classList.remove("active"));
+  window.switchTab = function(btn, pageId){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(pageId).classList.add("active");
+
+  const active = document.getElementById(pageId);
+  if(active){
+    active.classList.add("active");
+  }
+  document.querySelectorAll(".navbar button").forEach(b=>b.classList.remove("activeTab"));
+  btn.classList.add("activeTab");
+};
 </script>
 </div>
-</body>
-</html>
