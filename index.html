@@ -348,84 +348,113 @@ window.addPost = async function(type, inputId){
   await addDoc(collection(db, type), {
     text,
     username,
-    uid: auth.currentUser.uid, // ✅ IMPORTANT
-    likes:0,
-    likedBy: [], // for next part
+    uid: auth.currentUser.uid,
+
+    likes: 0,
+    laugh: 0,
+    skull: 0,
+
+    reactedBy: {
+      likes: [],
+      laugh: [],
+      skull: []
+    },
+
     createdAt: serverTimestamp()
   });
 
   document.getElementById(inputId).value='';
 };
 
-window.deletePost = async function(type,id){
-  await deleteDoc(doc(db,type,id));
-};
-
 // ❤️ REACTIONS
-window.react = async function(type,id){
+window.react = async function(type,id,field){
   const ref = doc(db,type,id);
-
   const snap = await getDoc(ref);
   let data = snap.data();
 
-  if(!data.likedBy){
-    data.likedBy = [];
+  const uid = auth.currentUser.uid;
+
+  let reactedBy = data.reactedBy || {
+    likes: [],
+    laugh: [],
+    skull: []
+  };
+
+  // 🔍 check if user already reacted somewhere
+  let previous = null;
+
+  for(let key of ["likes","laugh","skull"]){
+    if(reactedBy[key]?.includes(uid)){
+      previous = key;
+      break;
+    }
   }
 
-  // 🚫 already liked
-  if(data.likedBy.includes(auth.currentUser.uid)){
-    alert("Already liked 😤");
+  // 🧠 CASE 1: same reaction → UNLIKE
+  if(previous === field){
+    await updateDoc(ref, {
+      [field]: increment(-1),
+      [`reactedBy.${field}`]: reactedBy[field].filter(u=>u!==uid)
+    });
     return;
   }
 
-  // ✅ update
-  await updateDoc(ref, {
-    likes: increment(1),
-    likedBy: [...data.likedBy, auth.currentUser.uid]
-  });
+  // 🧠 CASE 2: switching reaction
+  let updates = {};
+
+  if(previous){
+    updates[previous] = increment(-1);
+    updates[`reactedBy.${previous}`] = reactedBy[previous].filter(u=>u!==uid);
+  }
+
+  updates[field] = increment(1);
+  updates[`reactedBy.${field}`] = [...(reactedBy[field]||[]), uid];
+
+  await updateDoc(ref, updates);
 };
 
 
 // 👀 LIVE FEED
 function listen(type, listId){
-  const q = query(collection(db, type), orderBy("likes", "desc"));
+  const q = query(collection(db, type), orderBy("createdAt","desc"));
 
-  onSnapshot(q, (snap) => {
+  onSnapshot(q, snap=>{
     let div = document.getElementById(listId);
-    div.innerHTML = "";
+    if(!div) return;
 
-    snap.forEach(docSnap => {
+    div.innerHTML="";
+
+    snap.forEach(docSnap=>{
       let d = docSnap.data();
       let id = docSnap.id;
 
-      let el = document.createElement("div");
-      el.className = "card";
+      let el = document.createElement('div');
+      el.className='card';
 
-el.innerHTML = `
-  <div class="head">@${d.username}</div>
+      el.innerHTML = `
+        <div class="head">@${d.username}</div>
+        <div class="postText">${d.text || ""}</div>
 
-  <div class="postText">${d.text || ""}</div>
+        <div class="actions">
+          <button onclick="react('${type}','${id}','likes')">❤️ ${d.likes || 0}</button>
+          <button onclick="react('${type}','${id}','laugh')">😂 ${d.laugh || 0}</button>
+          <button onclick="react('${type}','${id}','skull')">💀 ${d.skull || 0}</button>
 
-  ${d.imageUrl ? `<img src="${d.imageUrl}" class="meme">` : ""}
-
-  <div class="actions">
-    <button onclick="react('${type}','${id}','likes')">❤️ ${d.likes || 0}</button>
-    <button onclick="react('${type}','${id}','laugh')">😂 ${d.laugh || 0}</button>
-    <button onclick="react('${type}','${id}','skull')">💀 ${d.skull || 0}</button>
-
-    ${
-      d.uid === auth.currentUser.uid
-      ? `<button onclick="deletePost('${type}','${id}')">🗑️</button>`
-      : ""
-    }
-  </div>
-`;
+          ${
+            d.uid === auth.currentUser.uid
+            ? `<button onclick="deletePost('${type}','${id}')">🗑️</button>`
+            : ""
+          }
+        </div>
+      `;
 
       div.appendChild(el);
     });
   });
 }
-
+window.deletePost = async function(type,id){
+  await deleteDoc(doc(db,type,id));
+};
 
 // 🚀 START APP
 window.onload = () => {
