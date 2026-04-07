@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chaos Hub App</title>
 
 <style>
@@ -12,9 +12,9 @@
 
 body{
   margin:0;
-  font-family:'Poppins', sans-serif;
-  background:#0f0f0f;
-  overflow:hidden;
+  font-family: 'Poppins', sans-serif;
+  background:#0c0c0c;
+  color:#eaeaea;
 }
 
 /* 🌌 BACKGROUND ANIMATION */
@@ -127,21 +127,30 @@ header{
   top:0;
   z-index:10;
 }
-
-header::after{
-  content:"";
-  display:block;
-  width:60px;
-  height:3px;
-  margin:6px auto 0;
-  border-radius:10px;
-  background:linear-gradient(90deg,#6a5cff,#00c6ff);
-  box-shadow:0 0 12px rgba(0,198,255,0.6);
+.header{
+  position:sticky;
+  top:0;
+  width:100%;
+  padding:12px;
+  text-align:center;
+  font-weight:600;
+  font-size:20px;
+  background:#0c0c0c;
+  border-bottom:1px solid #222;
+  z-index:5;
 }
 
-.page{display:none;padding:15px;max-width:800px;margin:auto}
-.active{display:block}
+.page{
+  display:none;
+  padding:15px;
+  padding-bottom:70px; /* space for navbar */
+  max-width:600px;
+  margin:auto;
+}
 
+.active{
+  display:block;
+}
 .sectionTitle{
   font-size:18px;
   font-weight:600;
@@ -150,43 +159,43 @@ header::after{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-
 .card{
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.08);
-  backdrop-filter:blur(10px);
-  padding:14px;
-  border-radius:16px;
+  background:#121212;
+  border-radius:15px;
+  padding:12px;
   margin-bottom:12px;
-  transition:.3s;
+  border:1px solid #1f1f1f;
+  transition:0.3s;
 }
+
 .card:hover{
-  transform:translateY(-4px) scale(1.01);
-  box-shadow:0 15px 30px rgba(0,0,0,.6);
+  transform:translateY(-3px);
+  box-shadow:0 0 20px rgba(255,0,100,0.1);
 }
 
 textarea{
   width:100%;
-  padding:10px;
   border:none;
   border-radius:10px;
-  background:#1c1c1c;
+  padding:10px;
+  background:#1a1a1a;
   color:white;
+  resize:none;
+  outline:none;
 }
 
 button{
-  margin-top:8px;
-  padding:8px 12px;
+  background:linear-gradient(90deg,#ff4d6d,#ff758f);
   border:none;
+  padding:8px 12px;
   border-radius:10px;
-  background:linear-gradient(90deg,#ff0055,#ff4d88);
   color:white;
   cursor:pointer;
-  transition:.25s;
+  transition:0.2s;
 }
+
 button:hover{
-  transform:scale(1.07);
-  box-shadow:0 10px 25px rgba(255,0,85,.4);
+  transform:scale(1.05);
 }
 
 .meme{width:100%;border-radius:10px;margin-top:10px}
@@ -195,26 +204,33 @@ button:hover{
 
 .postText{margin:8px 0}
 
-.bottomNav{
+.navbar{
   position:fixed;
   bottom:0;
   width:100%;
   display:flex;
   justify-content:space-around;
-  background:#111;
   padding:10px 0;
-  box-shadow:0 -5px 20px rgba(0,0,0,.5);
+  background:#0c0c0c;
+  border-top:1px solid #222;
 }
 
-.bottomNav button{
+.navbar button{
   background:none;
   border:none;
   color:#aaa;
-  font-size:14px;
+  font-size:22px;
+  cursor:pointer;
+  transition:0.2s;
 }
 
-.bottomNav button:hover{
+.navbar button:hover{
   color:white;
+  transform:scale(1.2);
+}
+
+.navbar button.activeTab{
+  color:#ff4d6d;
 }
 </style>
 </head>
@@ -277,7 +293,7 @@ button:hover{
   <div id="memeList"></div>
 </div>
 
-<div class="bottomNav">
+<div class="navbar">
   <button onclick="showPage('home')">🏠</button>
   <button onclick="showPage('conf')">😌</button>
   <button onclick="showPage('op')">😍</button>
@@ -409,15 +425,13 @@ listen("opinions", "opList");
   listen("stories","storyList");
   listen("memes","memeList");
 };
-window.showPage = function(pageId){
-  const pages = document.querySelectorAll(".page");
 
-  pages.forEach(p => p.classList.remove("active"));
+  window.switchTab = function(btn, pageId){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(pageId).classList.add("active");
 
-  const active = document.getElementById(pageId);
-  if(active){
-    active.classList.add("active");
-  }
+  document.querySelectorAll(".navbar button").forEach(b=>b.classList.remove("activeTab"));
+  btn.classList.add("activeTab");
 };
 </script>
 </div>
