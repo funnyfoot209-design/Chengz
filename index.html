@@ -407,18 +407,15 @@ window.onload = () => {
   listen("stories", "storyList");
   listen("memes", "memeList");
 };
-  window.showPage = function(pageId){
-  const pages = ["homelist","conflist","storylist","memelist"];
+window.showPage = function(pageId){
+  const pages = document.querySelectorAll(".page");
 
-  // hide all
-  pages.forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.style.display = "none";
-  });
+  pages.forEach(p => p.classList.remove("active"));
 
-  // show selected
   const active = document.getElementById(pageId);
-  if(active) active.style.display = "block";
+  if(active){
+    active.classList.add("active");
+  }
 };
 </script>
 </div>
