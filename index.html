@@ -312,7 +312,7 @@ button:hover{
 </div>
 <script type="module">
 
-// 🔥 IMPORTS (ONLY ONCE — DO NOT DUPLICATE)
+// 🔥 IMPORTS
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, increment } 
@@ -322,7 +322,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 
-// 🔥 FIREBASE CONFIG (PUT YOUR REAL VALUES)
+// 🔥 CONFIG (PUT YOUR OWN)
 const firebaseConfig = {
   apiKey: "AIzaSyD5fwpIYz4_0UCnQ_HpKtHa8ohnXdrWr20",
   authDomain: "modimemepage.firebaseapp.com",
@@ -340,18 +340,18 @@ const provider = new GoogleAuthProvider();
 let username = "Anon";
 
 
-// 🔐 LOGIN FUNCTION (GLOBAL)
+// 🔐 LOGIN
 window.login = async function(){
   try{
     await signInWithPopup(auth, provider);
   } catch(err){
-    console.log("LOGIN ERROR:", err);
+    console.log(err);
     alert(err.message);
   }
 };
 
 
-// 🔐 AUTH STATE (LOCK / UNLOCK APP)
+// 🔐 AUTH STATE
 onAuthStateChanged(auth, (user) => {
   if(user){
     username = user.displayName;
@@ -365,7 +365,7 @@ onAuthStateChanged(auth, (user) => {
 });
 
 
-// 📝 ADD POST
+// 📝 POST
 window.addPost = async function(type, inputId, imgId){
   let text = document.getElementById(inputId).value;
   let img = document.getElementById(imgId)?.files[0];
@@ -376,67 +376,23 @@ window.addPost = async function(type, inputId, imgId){
     text,
     imageUrl,
     username,
-    likes: 0,
-    laugh: 0,
-    skull: 0,
+    likes:0,
     createdAt: serverTimestamp()
   });
 
-  document.getElementById(inputId).value = "";
+  document.getElementById(inputId).value='';
 };
 
 
-// ❤️ REACTIONS
-window.react = async function(type, id, field){
-  await updateDoc(doc(db, type, id), {
+// ❤️ LIKE
+window.react = async function(type,id,field="likes"){
+  await updateDoc(doc(db,type,id), {
     [field]: increment(1)
   });
 };
 
 
-// 👀 LIVE FEED
-function listen(type, listId){
-  const q = query(collection(db, type), orderBy("likes", "desc"));
-
-  onSnapshot(q, (snap) => {
-    let div = document.getElementById(listId);
-    div.innerHTML = "";
-
-    snap.forEach(docSnap => {
-      let d = docSnap.data();
-      let id = docSnap.id;
-
-      let el = document.createElement("div");
-      el.className = "card";
-
-      el.innerHTML = `
-      el.innerHTML = `
-  <div class="post" ontouchend="handleDoubleTap(event,'${type}','${id}')" onclick="handleDoubleTap(event,'${type}','${id}')">
-    
-    <b>@${d.username}</b>
-    <p>${d.text || ""}</p>
-
-    ${d.imageUrl ? `<img src="${d.imageUrl}" class="meme">` : ""}
-
-    <div class="likeCount">❤️ ${d.likes}</div>
-
-    <div class="heartAnim">❤️</div>
-  </div>
-`;
-        <div class="head">@${d.username}</div>
-        <div class="postText">${d.text || ""}</div>
-        ${d.imageUrl ? `<img src="${d.imageUrl}" class="meme">` : ""}
-        <div class="actions">
-          <button onclick="react('${type}','${id}','likes')">❤️ ${d.likes}</button>
-          <button onclick="react('${type}','${id}','laugh')">😂 ${d.laugh}</button>
-          <button onclick="react('${type}','${id}','skull')">💀 ${d.skull}</button>
-        </div>
-      `;
-
-      div.appendChild(el);
-    });
-  });
-}
+// ❤️ DOUBLE TAP
 let lastTap = 0;
 
 window.handleDoubleTap = function(e, type, id){
@@ -447,47 +403,114 @@ window.handleDoubleTap = function(e, type, id){
     react(type, id, "likes");
 
     let heart = e.currentTarget.querySelector(".heartAnim");
-    heart.style.opacity = "1";
-    heart.style.transform = "scale(1.5)";
-
-    setTimeout(()=>{
-      heart.style.opacity = "0";
-      heart.style.transform = "scale(1)";
-    }, 600);
+    if(heart){
+      heart.style.opacity = "1";
+      heart.style.transform = "scale(1.5)";
+      setTimeout(()=>{
+        heart.style.opacity = "0";
+        heart.style.transform = "scale(1)";
+      }, 600);
+    }
   }
 
   lastTap = currentTime;
 };
 
-// 🚀 START APP
-window.onload = () => {
-  document.getElementById("home").classList.add("active");
-};
-  
-listen("opinions", "opList");
-  listen("confessions","confList");
-  listen("stories","storyList");
-  listen("memes","memeList");
-};
 
+// 👀 LISTEN (RENDER POSTS)
+function listen(type, listId){
+  const q = query(collection(db, type), orderBy("likes","desc"));
+
+  onSnapshot(q, snap=>{
+    let div = document.getElementById(listId);
+    if(!div) return;
+
+    div.innerHTML="";
+
+    snap.forEach(docSnap=>{
+      let d = docSnap.data();
+      let id = docSnap.id;
+
+      let el = document.createElement('div');
+      el.className='card';
+
+      el.innerHTML = `
+        <div class="post" ontouchend="handleDoubleTap(event,'${type}','${id}')" onclick="handleDoubleTap(event,'${type}','${id}')">
+          
+          <b>@${d.username}</b>
+          <p>${d.text || ""}</p>
+
+          ${d.imageUrl ? `<img src="${d.imageUrl}" class="meme">` : ""}
+
+          <div>❤️ ${d.likes}</div>
+
+          <div class="heartAnim">❤️</div>
+        </div>
+      `;
+
+      div.appendChild(el);
+    });
+  });
+}
+
+
+// 📱 NAVIGATION
 window.switchTab = function(btn, pageId){
-  // hide all pages
   document.querySelectorAll(".page").forEach(p=>{
     p.classList.remove("active");
   });
 
-  // show selected page
   const page = document.getElementById(pageId);
   if(page){
     page.classList.add("active");
   }
 
-  // update nav highlight
   document.querySelectorAll(".navbar button").forEach(b=>{
     b.classList.remove("activeTab");
   });
 
-  btn.classList.add("activeTab");
+  if(btn) btn.classList.add("activeTab");
+};
+
+
+// 📱 SWIPE NAV
+let startX = 0;
+
+document.addEventListener("touchstart", (e)=>{
+  if(e.target.closest(".post")) return;
+  startX = e.touches[0].clientX;
+});
+
+document.addEventListener("touchend", (e)=>{
+  if(e.target.closest(".post")) return;
+
+  let endX = e.changedTouches[0].clientX;
+  let diff = startX - endX;
+
+  const pages = ["homelist","conflist","storylist","memelist"];
+  let currentIndex = pages.findIndex(id =>
+    document.getElementById(id)?.classList.contains("active")
+  );
+
+  if(diff > 50 && currentIndex < pages.length-1){
+    switchTab(document.querySelectorAll(".navbar button")[currentIndex+1], pages[currentIndex+1]);
+  }
+
+  if(diff < -50 && currentIndex > 0){
+    switchTab(document.querySelectorAll(".navbar button")[currentIndex-1], pages[currentIndex-1]);
+  }
+});
+
+
+// 🚀 START
+window.onload = () => {
+  // default page
+  document.getElementById("homelist")?.classList.add("active");
+
+  // listeners
+  listen("confessions","confList");
+  listen("stories","storyList");
+  listen("memes","memeList");
 };
 </script>
 </div>
