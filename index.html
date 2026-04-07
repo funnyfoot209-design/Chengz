@@ -266,6 +266,8 @@ button:hover{
 
 <div id="conf" class="page">
   <div class="sectionTitle">🤫 Confessions</div>
+  <input type="date" id="confFilter" 
+  onchange="applyFilter('confessions','confList','confFilter')">
   <div class="card">
     <textarea id="confInput" placeholder="Drop something wild..."></textarea>
     <button onclick="addPost('confessions','confInput')">Post</button>
@@ -275,6 +277,8 @@ button:hover{
 
 <div id="op" class="page">
   <div class="sectionTitle">Gossip</div>
+  <input type="date" id="opFilter" 
+  onchange="applyFilter('opinions','opList','opFilter')">
   <div class="card">
     <textarea id="opInput" placeholder="Hot take..."></textarea>
     <button onclick="addPost('opinions','opInput')">Post</button>
@@ -284,6 +288,8 @@ button:hover{
 
 <div id="story" class="page">
   <div class="sectionTitle">Bakchodi</div>
+  <input type="date" id="storyFilter" 
+  onchange="applyFilter('stories','storyList','storyFilter')">
   <div class="card">
     <textarea id="storyInput" placeholder="Storytime..."></textarea>
     <button onclick="addPost('stories','storyInput')">Post</button>
@@ -293,6 +299,8 @@ button:hover{
 
 <div id="meme" class="page">
   <div class="sectionTitle"> Memes</div>
+  <input type="date" id="memeFilter" 
+  onchange="applyFilter('memes','memeList','memeFilter')">
   <div class="card">
     <textarea id="memeInput" placeholder="Caption..."></textarea>
     <input type="file" id="memeImg">
@@ -530,6 +538,37 @@ window.showPage = function(pageId){
 
   return randomName + "_" + num;
 }
+  window.applyFilter = function(type, listId, filterId){
+  const selectedDate = document.getElementById(filterId).value;
+
+  const q = query(collection(db, type), orderBy("createdAt","desc"));
+
+  onSnapshot(q, snap=>{
+    let div = document.getElementById(listId);
+    div.innerHTML = "";
+
+    snap.forEach(docSnap=>{
+      let d = docSnap.data();
+      let id = docSnap.id;
+
+      if(!d.createdAt) return;
+
+      let postDate = d.createdAt.toDate().toISOString().split("T")[0];
+
+      if(selectedDate && postDate !== selectedDate) return;
+
+      let el = document.createElement("div");
+      el.className = "card";
+
+      el.innerHTML = `
+        <div class="head">@${d.username}</div>
+        <div class="postText">${d.text}</div>
+      `;
+
+      div.appendChild(el);
+    });
+  });
+};
 </script>
 </div>
 </body>
