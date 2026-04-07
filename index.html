@@ -12,9 +12,9 @@
 
 body{
   margin:0;
-  font-family: 'Poppins', sans-serif;
-  background:#0c0c0c;
-  color:#eaeaea;
+  font-family:'Poppins', sans-serif;
+  background:#0a0a0f;
+  color:#e6e6eb;
 }
 
 /* 🌌 BACKGROUND ANIMATION */
@@ -130,26 +130,25 @@ header{
 .header{
   position:sticky;
   top:0;
-  width:100%;
   padding:12px;
   text-align:center;
   font-weight:600;
   font-size:20px;
-  background:#0c0c0c;
-  border-bottom:1px solid #222;
-  z-index:5;
+  background:#0a0a0f;
+  border-bottom:1px solid #1a1a25;
 }
 
 .page{
   display:none;
-  padding:15px;
-  padding-bottom:70px; /* space for navbar */
-  max-width:600px;
-  margin:auto;
+  opacity:0;
+  transform:translateX(20px);
+  transition:all 0.3s ease;
 }
 
 .active{
   display:block;
+  opacity:1;
+  transform:translateX(0);
 }
 .sectionTitle{
   font-size:18px;
@@ -160,32 +159,30 @@ header{
   -webkit-text-fill-color:transparent;
 }
 .card{
-  background:#121212;
-  border-radius:15px;
+  background:#12121a;
+  border-radius:14px;
   padding:12px;
   margin-bottom:12px;
-  border:1px solid #1f1f1f;
+  border:1px solid #1f1f2a;
   transition:0.3s;
 }
 
 .card:hover{
   transform:translateY(-3px);
-  box-shadow:0 0 20px rgba(255,0,100,0.1);
+  box-shadow:0 0 20px rgba(106,92,255,0.15);
 }
-
 textarea{
   width:100%;
   border:none;
   border-radius:10px;
   padding:10px;
-  background:#1a1a1a;
+  background:#1a1a24;
   color:white;
-  resize:none;
   outline:none;
 }
 
 button{
-  background:linear-gradient(90deg,#ff4d6d,#ff758f);
+  background:linear-gradient(90deg,#6a5cff,#4facfe);
   border:none;
   padding:8px 12px;
   border-radius:10px;
@@ -201,7 +198,20 @@ button:hover{
 .meme{width:100%;border-radius:10px;margin-top:10px}
 
 .actions button{margin-right:5px}
+.post{
+  position:relative;
+}
 
+.heartAnim{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(0.5);
+  font-size:50px;
+  opacity:0;
+  pointer-events:none;
+  transition:0.4s;
+}
 .postText{margin:8px 0}
 
 .navbar{
@@ -211,26 +221,26 @@ button:hover{
   display:flex;
   justify-content:space-around;
   padding:10px 0;
-  background:#0c0c0c;
-  border-top:1px solid #222;
+  background:#0a0a0f;
+  border-top:1px solid #1a1a25;
 }
 
 .navbar button{
   background:none;
   border:none;
-  color:#aaa;
+  color:#888;
   font-size:22px;
   cursor:pointer;
   transition:0.2s;
 }
 
 .navbar button:hover{
-  color:white;
+  color:#fff;
   transform:scale(1.2);
 }
 
 .navbar button.activeTab{
-  color:#ff4d6d;
+  color:#6a5cff;
 }
 </style>
 </head>
@@ -294,11 +304,11 @@ button:hover{
 </div>
 
 <div class="navbar">
-  <button onclick="showPage('home')">🏠</button>
-  <button onclick="showPage('conf')">😌</button>
-  <button onclick="showPage('op')">😍</button>
-  <button onclick="showPage('story')">💀</button>
-  <button onclick="showPage('meme')">🥀</button>
+  <button onclick="switchTab(this,'home')">🏠</button>
+  <button onclick="switchTab(this,'conf')">🤫</button>
+    <button onclick="switchTab(this,'op')">😌</button>
+  <button onclick="switchTab(this,'story')">😍</button>
+  <button onclick="switchTab(this,'meme')">🥀</button>
 </div>
 <script type="module">
 
@@ -400,6 +410,19 @@ function listen(type, listId){
       el.className = "card";
 
       el.innerHTML = `
+      el.innerHTML = `
+  <div class="post" ontouchend="handleDoubleTap(event,'${type}','${id}')" onclick="handleDoubleTap(event,'${type}','${id}')">
+    
+    <b>@${d.username}</b>
+    <p>${d.text || ""}</p>
+
+    ${d.imageUrl ? `<img src="${d.imageUrl}" class="meme">` : ""}
+
+    <div class="likeCount">❤️ ${d.likes}</div>
+
+    <div class="heartAnim">❤️</div>
+  </div>
+`;
         <div class="head">@${d.username}</div>
         <div class="postText">${d.text || ""}</div>
         ${d.imageUrl ? `<img src="${d.imageUrl}" class="meme">` : ""}
@@ -414,11 +437,32 @@ function listen(type, listId){
     });
   });
 }
+let lastTap = 0;
 
+window.handleDoubleTap = function(e, type, id){
+  let currentTime = new Date().getTime();
+  let tapLength = currentTime - lastTap;
+
+  if(tapLength < 300 && tapLength > 0){
+    react(type, id, "likes");
+
+    let heart = e.currentTarget.querySelector(".heartAnim");
+    heart.style.opacity = "1";
+    heart.style.transform = "scale(1.5)";
+
+    setTimeout(()=>{
+      heart.style.opacity = "0";
+      heart.style.transform = "scale(1)";
+    }, 600);
+  }
+
+  lastTap = currentTime;
+};
 
 // 🚀 START APP
 window.onload = () => {
-  showPage("homelist");
+  document.getElementById("home").classList.add("active");
+};
   
 listen("opinions", "opList");
   listen("confessions","confList");
@@ -426,11 +470,23 @@ listen("opinions", "opList");
   listen("memes","memeList");
 };
 
-  window.switchTab = function(btn, pageId){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(pageId).classList.add("active");
+window.switchTab = function(btn, pageId){
+  // hide all pages
+  document.querySelectorAll(".page").forEach(p=>{
+    p.classList.remove("active");
+  });
 
-  document.querySelectorAll(".navbar button").forEach(b=>b.classList.remove("activeTab"));
+  // show selected page
+  const page = document.getElementById(pageId);
+  if(page){
+    page.classList.add("active");
+  }
+
+  // update nav highlight
+  document.querySelectorAll(".navbar button").forEach(b=>{
+    b.classList.remove("activeTab");
+  });
+
   btn.classList.add("activeTab");
 };
 </script>
