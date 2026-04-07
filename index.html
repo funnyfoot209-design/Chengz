@@ -403,10 +403,12 @@ function listen(type, listId){
 
 // 🚀 START APP
 window.onload = () => {
-  listen("confessions", "confList");
-  listen("opinions", "opList");
-  listen("stories", "storyList");
-  listen("memes", "memeList");
+  showPage("home");
+  
+listen("opinions", "opList");
+  listen("confessions","confList");
+  listen("stories","storyList");
+  listen("memes","memeList");
 };
 window.showPage = function(pageId){
   const pages = document.querySelectorAll(".page");
