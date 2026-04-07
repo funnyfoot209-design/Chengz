@@ -295,6 +295,7 @@ from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 
 // 🔥 FIREBASE CONFIG (PUT YOUR REAL VALUES)
@@ -341,30 +342,46 @@ onAuthStateChanged(auth, (user) => {
 
 
 // 📝 ADD POST
-window.addPost = async function(type, inputId, imgId){
+window.addPost = async function(type, inputId){
   let text = document.getElementById(inputId).value;
-  let img = document.getElementById(imgId)?.files[0];
-
-  let imageUrl = img ? URL.createObjectURL(img) : "";
 
   await addDoc(collection(db, type), {
     text,
-    imageUrl,
     username,
-    likes: 0,
-    laugh: 0,
-    skull: 0,
+    uid: auth.currentUser.uid, // ✅ IMPORTANT
+    likes:0,
+    likedBy: [], // for next part
     createdAt: serverTimestamp()
   });
 
-  document.getElementById(inputId).value = "";
+  document.getElementById(inputId).value='';
 };
 
+window.deletePost = async function(type,id){
+  await deleteDoc(doc(db,type,id));
+};
 
 // ❤️ REACTIONS
-window.react = async function(type, id, field){
-  await updateDoc(doc(db, type, id), {
-    [field]: increment(1)
+window.react = async function(type,id){
+  const ref = doc(db,type,id);
+
+  const snap = await getDoc(ref);
+  let data = snap.data();
+
+  if(!data.likedBy){
+    data.likedBy = [];
+  }
+
+  // 🚫 already liked
+  if(data.likedBy.includes(auth.currentUser.uid)){
+    alert("Already liked 😤");
+    return;
+  }
+
+  // ✅ update
+  await updateDoc(ref, {
+    likes: increment(1),
+    likedBy: [...data.likedBy, auth.currentUser.uid]
   });
 };
 
@@ -384,16 +401,25 @@ function listen(type, listId){
       let el = document.createElement("div");
       el.className = "card";
 
-      el.innerHTML = `
-        <div class="head">@${d.username}</div>
-        <div class="postText">${d.text || ""}</div>
-        ${d.imageUrl ? `<img src="${d.imageUrl}" class="meme">` : ""}
-        <div class="actions">
-          <button onclick="react('${type}','${id}','likes')">❤️ ${d.likes}</button>
-          <button onclick="react('${type}','${id}','laugh')">😂 ${d.laugh}</button>
-          <button onclick="react('${type}','${id}','skull')">💀 ${d.skull}</button>
-        </div>
-      `;
+el.innerHTML = `
+  <div class="head">@${d.username}</div>
+
+  <div class="postText">${d.text || ""}</div>
+
+  ${d.imageUrl ? `<img src="${d.imageUrl}" class="meme">` : ""}
+
+  <div class="actions">
+    <button onclick="react('${type}','${id}','likes')">❤️ ${d.likes || 0}</button>
+    <button onclick="react('${type}','${id}','laugh')">😂 ${d.laugh || 0}</button>
+    <button onclick="react('${type}','${id}','skull')">💀 ${d.skull || 0}</button>
+
+    ${
+      d.uid === auth.currentUser.uid
+      ? `<button onclick="deletePost('${type}','${id}')">🗑️</button>`
+      : ""
+    }
+  </div>
+`;
 
       div.appendChild(el);
     });
