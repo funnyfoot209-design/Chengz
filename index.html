@@ -3,8 +3,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chaos Hub App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Rasen DIH</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
@@ -285,6 +285,7 @@ button:hover{
   <button onclick="showPage('story')">💀</button>
   <button onclick="showPage('meme')">🥀</button>
 </div>
+  
 <script type="module">
 
 // 🔥 IMPORTS (ONLY ONCE — DO NOT DUPLICATE)
@@ -296,7 +297,7 @@ from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+import { deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // 🔥 FIREBASE CONFIG (PUT YOUR REAL VALUES)
 const firebaseConfig = {
@@ -374,43 +375,27 @@ window.react = async function(type,id,field){
 
   const uid = auth.currentUser.uid;
 
-  let reactedBy = data.reactedBy || {
-    likes: [],
-    laugh: [],
-    skull: []
-  };
-
-  // 🔍 check if user already reacted somewhere
-  let previous = null;
-
-  for(let key of ["likes","laugh","skull"]){
-    if(reactedBy[key]?.includes(uid)){
-      previous = key;
-      break;
-    }
+  // ensure structure exists
+  let reactedBy = data.reactedBy || {};
+  if(!reactedBy[field]){
+    reactedBy[field] = [];
   }
 
-  // 🧠 CASE 1: same reaction → UNLIKE
-  if(previous === field){
+  let hasReacted = reactedBy[field].includes(uid);
+
+  if(hasReacted){
+    // ❌ UNLIKE
     await updateDoc(ref, {
       [field]: increment(-1),
       [`reactedBy.${field}`]: reactedBy[field].filter(u=>u!==uid)
     });
-    return;
+  } else {
+    // ✅ ADD REACTION
+    await updateDoc(ref, {
+      [field]: increment(1),
+      [`reactedBy.${field}`]: [...reactedBy[field], uid]
+    });
   }
-
-  // 🧠 CASE 2: switching reaction
-  let updates = {};
-
-  if(previous){
-    updates[previous] = increment(-1);
-    updates[`reactedBy.${previous}`] = reactedBy[previous].filter(u=>u!==uid);
-  }
-
-  updates[field] = increment(1);
-  updates[`reactedBy.${field}`] = [...(reactedBy[field]||[]), uid];
-
-  await updateDoc(ref, updates);
 };
 
 
@@ -451,11 +436,14 @@ function listen(type, listId){
       div.appendChild(el);
     });
   });
-}
 window.deletePost = async function(type,id){
-  await deleteDoc(doc(db,type,id));
+  try{
+    await deleteDoc(doc(db,type,id));
+  }catch(e){
+    console.log(e);
+    alert("Delete failed");
+  }
 };
-
 // 🚀 START APP
 window.onload = () => {
   showPage("home");
