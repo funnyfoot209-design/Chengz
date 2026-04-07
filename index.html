@@ -13,11 +13,12 @@
 
 body{
   margin:0;
-  font-family:'Poppins', sans-serif;
+  font-family:Arial;
   background:#0f0f0f;
-  overflow:hidden;
-}
+  color:white;
 
+  overflow-y:auto; /* ✅ allows scroll */
+}
 /* 🌌 BACKGROUND ANIMATION */
 body::before{
   content:"";
@@ -140,7 +141,15 @@ header::after{
   box-shadow:0 0 12px rgba(0,198,255,0.6);
 }
 
-.page{display:none;padding:15px;max-width:800px;margin:auto}
+.page{
+  display:none;
+  padding:15px;
+  max-width:600px;
+  margin:auto;
+
+  min-height:100vh; /* ✅ allows scroll */
+    padding-bottom:80px;
+}
 .active{display:block}
 
 .sectionTitle{
@@ -190,7 +199,11 @@ button:hover{
   box-shadow:0 10px 25px rgba(255,0,85,.4);
 }
 
-.meme{width:100%;border-radius:10px;margin-top:10px}
+.meme{
+  width:100%;
+  border-radius:10px;
+  margin-top:8px;
+}
 
 .actions button{margin-right:5px}
 
@@ -343,11 +356,19 @@ onAuthStateChanged(auth, (user) => {
 
 
 // 📝 ADD POST
-window.addPost = async function(type, inputId){
+window.addPost = async function(type, inputId, imgId){
   let text = document.getElementById(inputId).value;
+  let file = document.getElementById(imgId)?.files[0];
+
+  let imageUrl = "";
+
+  if(file){
+    imageUrl = URL.createObjectURL(file); // temporary preview
+  }
 
   await addDoc(collection(db, type), {
     text,
+    imageUrl,
     username,
     uid: auth.currentUser.uid,
 
